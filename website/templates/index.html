@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Member list:</h1>
+    {% for member in members %}
+        {{member.username}}
+    {% endfor %}
+{% endblock body %}
+

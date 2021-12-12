@@ -142,7 +142,7 @@ EMAIL_MAIL_HTML = 'mail_body.html'
 EMAIL_MAIL_PLAIN = 'mail_body.txt'
 EMAIL_TOKEN_LIFE = 60 * 60
 EMAIL_PAGE_TEMPLATE = 'confirm_template.html'
-EMAIL_PAGE_DOMAIN = 'https://shrimpire.herokuapp.com/' if 'HEROKU' in os.environ else 'http://localhost:8000/'
+EMAIL_PAGE_DOMAIN = os.environ.get('URL')
 
 MEDIA_ROOT = str((pathlib.Path(__file__).parent.parent / 'media').resolve())
 MEDIA_URL = "/media/"

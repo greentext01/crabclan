@@ -35,4 +35,4 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=False)
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
-    uuid = models.UUIDField(default=uuid.uuid4(), editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)

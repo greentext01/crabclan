@@ -6,3 +6,4 @@ django-email-verification
 django-environ
 gunicorn
 dj-database-url
+psycopg2

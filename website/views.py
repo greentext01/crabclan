@@ -1,23 +1,23 @@
 import base64
+import os
 import pathlib
 import re
+import qrcode
 import uuid
-from functools import wraps
 
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
-from django.db.models import Q
-from django.http.response import FileResponse, HttpResponseRedirect
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.http.response import FileResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 from django_email_verification import send_email
 from PIL import Image, ImageDraw, ImageFont
+from fpdf import FPDF
 
 from .models import Job, User
 
@@ -63,7 +63,7 @@ def index(request):
 def admin(request):
     if request.user.job.staff or request.user.is_superuser:
         return render(request, 'admin.html', {
-            'users': User.objects.filter(approved=False, is_active=True)
+            'users': User.objects.all()
         })
     else:
         return redirect('index')
@@ -111,10 +111,7 @@ def register(request):
         # Attempt to create new user
         form = SignupForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
+            user = form.save()
             login(request, user)
             send_email(user)
             return render(request, "email_acc.html")
@@ -134,10 +131,16 @@ def card_img(request):
     return FileResponse(open(base64.b64decode(request.GET.get('card')).decode('ascii'), 'rb'))
 
 
+def random_media(ext):
+    return str(uuid.uuid1()) + ext
+
+
 @login_required
 def idcard(request):
     if not request.user.approved:
         return redirect('index')
+
+    url = os.environ.get('URL')
 
     image = Image.open(settings.ASSET_ROOT / 'background.png').convert('RGBA')
     rank = Image.open(settings.ASSET_ROOT /
@@ -149,16 +152,68 @@ def idcard(request):
 
     font = ImageFont.truetype(str(settings.ASSET_ROOT / 'font.ttf'), 48)
 
-    draw.text((56, 229), request.user.get_full_name(), font=font, align="left", fill='black')
+    draw.text((56, 229), request.user.get_full_name(),
+              font=font, align="left", fill='black')
 
-    image_name = str(uuid.uuid1()) + '.png'
-    image.save(pathlib.Path(settings.MEDIA_ROOT) / image_name)
+    qr = qrcode.QRCode(box_size=4)
+    qr.add_data(f'{url}qrinfo/{request.user.uuid}/')
+    qr.make()
+    qr_img = qr.make_image()
 
-    # Remove the oldest file if there is more than 5 cards
-    images = list(pathlib.Path(settings.MEDIA_ROOT).glob('*.png'))
-    if len(images) > 5:
-        min(images, key=lambda f: f.stat().st_mtime).unlink()
+    image.paste(qr_img, (10, image.size[1] - qr_img.size[1] - 10))
+
+    image_relpath = random_media('.png')
+    image_path = str(pathlib.Path(settings.MEDIA_ROOT) / image_relpath)
+
+    image.save(image_path)
+
+    ################
+    # Generate pdf #
+    ################
+
+    pdf_path = str(random_media('.pdf'))
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.image(name=image_path, w=85, h=54, link='', type='')
+    pdf.output(dest='F', name=str(
+        pathlib.Path(settings.MEDIA_ROOT) / pdf_path))
+
+    # Remove the oldest files if there is more than 5 cards
+    media = list(pathlib.Path(settings.MEDIA_ROOT).iterdir())
+
+    if len(media) > 10:
+        while len(media) > 10:
+            min(media, key=lambda f: f.stat().st_mtime).unlink()
+            media = list(pathlib.Path(settings.MEDIA_ROOT).iterdir())
 
     return render(request, 'card.html', {
-        'card': image_name
+        'card': str(image_relpath),
+        'pdf': str(pdf_path)
+    })
+
+
+@login_required
+def media(request, file):
+    if not request.user.approved:
+        return redirect('index')
+    try:
+        return FileResponse(open(os.path.join(settings.MEDIA_ROOT, file), 'rb'))
+    except:
+        raise Http404()
+
+
+@login_required
+def fire(request, id):
+    if request.user.job.is_staff or request.user.is_superuser:
+        get_object_or_404(User, pk=id).delete()
+        return redirect('admin')
+    else:
+        raise PermissionDenied()
+
+
+def qrinfo(request, id):
+    user = get_object_or_404(User, uuid=id)
+    return render(request, 'qrinfo.html', {
+        'qr_user': user
     })

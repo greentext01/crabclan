@@ -1,24 +1,30 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Approve user</h1>
-    <table class="table">
-        <tbody>
-        </tbody>
-    </table>
-    <div class="container-fluid">
-        {% for user in users %}
+    <h1>Admin panel</h1>
+    {% for user in users %}
+        <div class="container-fluid mb-1">
             <div class="row border bg-light p-3">
-                <div class="col-1 d-flex align-items-center">
+                <div class="col-3 d-flex align-items-center">
                     <b>{{ user.username }}</b>
                 </div>
-                <div class="col-11">
-                    <form action="{% url 'approve' id=user.pk %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Approve</button>
-                    </form>
+                <div class="col-auto">
+                    {% if user.username != 'admin' %}
+                        <form action="{% url 'approve' id=user.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Fire</button>
+                        </form>
+                    {% endif %}
+                </div>
+                <div class="col-auto">
+                    {% if not user.approved %}
+                        <form action="{% url 'approve' id=user.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Approve</button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
-        {% endfor %}
-    </div>
+        </div>
+    {% endfor %}
 {% endblock body %}

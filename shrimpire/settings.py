@@ -109,7 +109,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 STATIC_URL = '/static/'
@@ -129,8 +128,10 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'shrimpire.mail@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('PASSWORD')
 
+
 def verified_callback(user):
     user.is_active = True
+
 
 EMAIL_VERIFIED_CALLBACK = verified_callback
 EMAIL_FROM_ADDRESS = 'shrimpire.mail@gmail.com'
@@ -145,4 +146,13 @@ MEDIA_ROOT = str((pathlib.Path(__file__).parent.parent / 'media').resolve())
 MEDIA_URL = "/media/"
 
 
-ASSET_ROOT = (pathlib.Path(__file__).parent.parent / 'website' / 'assets').resolve()
+ASSET_ROOT = (pathlib.Path(__file__).parent.parent /
+              'website' / 'assets').resolve()
+
+if os.environ.get('DEBUG') == 'True':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }

@@ -11,4 +11,7 @@ urlpatterns = [
     path("admin/", views.admin, name="admin"),
     path("card/", views.idcard, name="card"),
     path("img/", views.card_img, name="img"),
+    path("media/<str:file>/", views.media, name="media"),
+    path("qrinfo/<uuid:id>/", views.qrinfo, name="qrinfo"),
+    path("fire/<int:id>/", views.fire, name="fire"),
 ]

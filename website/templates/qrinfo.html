@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>User info</h1>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Username: {{ qr_user.username }}</li>
+        <li class="list-group-item">Full name: {{ qr_user.first_name }} {{ qr_user.last_name }}</li>
+        <li class="list-group-item">School email: {{ qr_user.email }}</li>
+        <li class="list-group-item">Requested job: {{ qr_user.job }}</li>
+        <li class="list-group-item">Approved: {{ qr_user.approved }}</li>
+        <li class="list-group-item">Email verified: {{ qr_user.is_active }}</li>
+    </ul>
+{% endblock body %}

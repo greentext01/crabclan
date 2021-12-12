@@ -5,4 +5,3 @@ crispy-bootstrap5
 django-email-verification
 django-environ
 gunicorn
-django-heroku

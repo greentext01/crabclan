@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Approve user</h1>
+    <table class="table">
+        <tbody>
+        </tbody>
+    </table>
+    <div class="container-fluid">
+        {% for user in users %}
+            <div class="row border bg-light p-3">
+                <div class="col-1 d-flex align-items-center">
+                    <b>{{ user.username }}</b>
+                </div>
+                <div class="col-11">
+                    <form action="{% url 'approve' id=user.pk %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Approve</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock body %}

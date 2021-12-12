@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    {% if success %}
+        {{ user.username }}, your account is confirmed!
+    {% else %}
+        Error, invalid token!
+    {% endif %}
+{% endblock body %}

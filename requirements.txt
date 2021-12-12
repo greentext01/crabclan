@@ -1,0 +1,7 @@
+django
+Pillow
+django-crispy-forms
+crispy-bootstrap5
+django-email-verification
+django-environ
+gunicorn

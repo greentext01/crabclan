@@ -127,18 +127,13 @@ def register(request):
         })
 
 
-@require_GET
-def card_img(request):
-    return FileResponse(open(base64.b64decode(request.GET.get('card')).decode('ascii'), 'rb'))
-
-
 def random_media(ext):
     return str(uuid.uuid1()) + ext
 
 
 @login_required
 def idcard(request):
-    if not request.user.approved:
+    if not request.user.approved and request.user.is_active:
         return redirect('index')
 
     url = os.environ.get('URL')
@@ -196,7 +191,7 @@ def idcard(request):
 
 @login_required
 def media(request, file):
-    if not request.user.approved:
+    if not request.user.approved and request.user.is_active:
         return redirect('index')
     try:
         return FileResponse(open(os.path.join(settings.MEDIA_ROOT, file), 'rb'))

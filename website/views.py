@@ -177,14 +177,6 @@ def idcard(request, username):
     pdf.output(dest='F', name=str(
         pathlib.Path(settings.MEDIA_ROOT) / pdf_path))
 
-    # Remove the oldest files if there is more than 5 cards
-    media = list(pathlib.Path(settings.MEDIA_ROOT).iterdir())
-
-    if len(media) > 10:
-        while len(media) > 10:
-            min(media, key=lambda f: f.stat().st_mtime).unlink()
-            media = list(pathlib.Path(settings.MEDIA_ROOT).iterdir())
-
     return render(request, 'card.html', {
         'card': str(image_relpath),
         'pdf': str(pdf_path)

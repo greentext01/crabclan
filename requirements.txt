@@ -5,8 +5,9 @@ crispy-bootstrap5
 django-email-verification
 django-environ
 gunicorn
-dj-database-url
-psycopg2
+psycopg2-binary
 whitenoise
 qrcode
 fpdf
+python-dotenv
+django-heroku

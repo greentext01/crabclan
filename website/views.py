@@ -60,6 +60,7 @@ def index(request):
     })
 
 
+@login_required
 def admin(request):
     if request.user.job.staff or request.user.is_superuser:
         return render(request, 'admin.html', {

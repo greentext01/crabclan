@@ -1,30 +1,59 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Admin panel</h1>
-    {% for user in users %}
-        <div class="container-fluid mb-1">
-            <div class="row border bg-light p-3">
-                <div class="col-3 d-flex align-items-center">
-                    <b>{{ user.username }}</b>
-                </div>
-                <div class="col-auto">
-                    {% if user.username != 'Oliveman' %}
-                        <form action="{% url 'fire' id=user.pk %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary">Fire</button>
-                        </form>
-                    {% endif %}
-                </div>
-                <div class="col-auto">
+<h1>Admin panel</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Job</th>
+            <th scope="col">Fire</th>
+            <th scope="col">Approve</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td>{{ user.job }}</td>
+                <td>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#fireModal{{ user.username }}">Fire</button>
+                </td>
+                <td>
                     {% if not user.approved %}
-                        <form action="{% url 'approve' id=user.pk %}" method="POST">
+                        <form action="{% url 'approve' user.pk %}" method="POST">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-primary">Approve</button>
                         </form>
                     {% endif %}
+                </td>
+            </tr>
+
+            <!-- Modal -->
+            <div class="modal fade" id="fireModal{{ user.username }}" tabindex="-1"
+                aria-labelledby="fireModalLabel{{ user.username }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="fireModalLabel{{ user.username }}">Fire {{ user.username }}</h5>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to fire {{ user.first_name }} {{ user.last_name }} ({{ user.username }})?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <form action="{% url 'fire' user.pk %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Fire</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock body %}

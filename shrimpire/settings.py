@@ -12,12 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import pathlib
-import dotenv
 import django_heroku
 import os
-
-
-dotenv.load_dotenv()
 
 LOGGING = {
     'version': 1,
@@ -48,7 +44,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG') == 'True'
+DEBUG = (os.environ.get('DEBUG') == 'True')
 
 ALLOWED_HOSTS = [os.environ.get('HOST')]
 
@@ -146,27 +142,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'shrimpire.mail@gmail.com'
-EMAIL_HOST_PASSWORD = os.environ.get('PASSWORD')
-
-
-def verified_callback(user):
-    user.is_active = True
-
-
-EMAIL_VERIFIED_CALLBACK = verified_callback
-EMAIL_FROM_ADDRESS = 'shrimpire.mail@gmail.com'
-EMAIL_MAIL_SUBJECT = 'Confirm your email'
-EMAIL_MAIL_HTML = 'mail_body.html'
-EMAIL_MAIL_PLAIN = 'mail_body.txt'
-EMAIL_TOKEN_LIFE = 60 * 60
-EMAIL_PAGE_TEMPLATE = 'confirm_template.html'
-EMAIL_PAGE_DOMAIN = os.environ.get('URL')
 
 MEDIA_ROOT = "/tmp"
 MEDIA_URL = "/media/"

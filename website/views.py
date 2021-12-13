@@ -64,7 +64,7 @@ def index(request):
 def admin(request):
     if request.user.job.staff or request.user.is_superuser:
         return render(request, 'admin.html', {
-            'users': User.objects.all()
+            'users': User.objects.filter(is_active=True)
         })
     else:
         return redirect('index')

@@ -9,8 +9,8 @@
                     <b>{{ user.username }}</b>
                 </div>
                 <div class="col-auto">
-                    {% if user.username != 'admin' %}
-                        <form action="{% url 'approve' id=user.pk %}" method="POST">
+                    {% if user.username != 'Oliveman' %}
+                        <form action="{% url 'fire' id=user.pk %}" method="POST">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-primary">Fire</button>
                         </form>

@@ -132,15 +132,17 @@ def random_media(ext):
 
 
 @login_required
-def idcard(request):
-    if not request.user.approved and request.user.is_active:
+def idcard(request, username):
+    user = get_object_or_404(User, username)
+
+    if not user.approved and user.is_active:
         return redirect('index')
 
     url = os.environ.get('URL')
 
     image = Image.open(settings.ASSET_ROOT / 'background.png').convert('RGBA')
     rank = Image.open(settings.ASSET_ROOT /
-                      f'{request.user.job.rank}{request.user.job.type}.png').convert('RGBA')
+                      f'{user.job.rank}{user.job.type}.png').convert('RGBA')
 
     image.paste(rank, (522, 101), rank)
 
@@ -148,11 +150,11 @@ def idcard(request):
 
     font = ImageFont.truetype(str(settings.ASSET_ROOT / 'font.ttf'), 48)
 
-    draw.text((56, 229), request.user.get_full_name(),
+    draw.text((56, 229), user.get_full_name(),
               font=font, align="left", fill='black')
 
     qr = qrcode.QRCode(box_size=4)
-    qr.add_data(f'{url}qrinfo/{request.user.uuid}/')
+    qr.add_data(f'{url}qrinfo/{user.uuid}/')
     qr.make()
     qr_img = qr.make_image()
 

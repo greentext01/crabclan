@@ -15,13 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django_email_verification import urls as email_urls
 from django.urls.conf import include
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin-ui/', admin.site.urls),
     path('', include('website.urls')),
-    path('email/', include(email_urls)),
 ]

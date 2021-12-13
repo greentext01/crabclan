@@ -32,7 +32,6 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     job = models.ForeignKey(Job, on_delete=models.SET_NULL, related_name="userjob", null=True)
     approved = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

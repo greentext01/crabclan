@@ -1,4 +1,3 @@
-import base64
 import os
 import pathlib
 import re
@@ -14,8 +13,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.http.response import FileResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_GET, require_POST
-from django_email_verification import send_email
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from PIL import Image, ImageDraw, ImageFont
 from fpdf import FPDF
 
@@ -64,7 +62,7 @@ def index(request):
 def admin(request):
     if request.user.job.staff or request.user.is_superuser:
         return render(request, 'admin.html', {
-            'users': User.objects.filter(is_active=True)
+            'users': User.objects.all()
         })
     else:
         return redirect('index')
@@ -114,12 +112,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            send_email(user)
-            return render(request, "email_acc.html")
-        else:
-            return render(request, "register.html", {
-                'form': form
-            })
+            return redirect('index')
 
     else:
         return render(request, "register.html", {
@@ -132,17 +125,15 @@ def random_media(ext):
 
 
 @login_required
-def idcard(request, username):
-    user = get_object_or_404(User, username)
-
-    if not user.approved and user.is_active:
+def idcard(request):
+    if not request.user.approved:
         return redirect('index')
 
     url = os.environ.get('URL')
 
     image = Image.open(settings.ASSET_ROOT / 'background.png').convert('RGBA')
     rank = Image.open(settings.ASSET_ROOT /
-                      f'{user.job.rank}{user.job.type}.png').convert('RGBA')
+                      f'{request.user.job.rank}{request.user.job.type}.png').convert('RGBA')
 
     image.paste(rank, (522, 101), rank)
 
@@ -150,11 +141,11 @@ def idcard(request, username):
 
     font = ImageFont.truetype(str(settings.ASSET_ROOT / 'font.ttf'), 48)
 
-    draw.text((56, 229), user.get_full_name(),
+    draw.text((56, 229), request.user.get_full_name(),
               font=font, align="left", fill='black')
 
     qr = qrcode.QRCode(box_size=4)
-    qr.add_data(f'{url}qrinfo/{user.uuid}/')
+    qr.add_data(f'{url}qrinfo/{request.user.uuid}/')
     qr.make()
     qr_img = qr.make_image()
 
@@ -193,7 +184,7 @@ def idcard(request, username):
 
 @login_required
 def media(request, file):
-    if not request.user.approved and request.user.is_active:
+    if not request.user.approved:
         return redirect('index')
     try:
         return FileResponse(open(os.path.join(settings.MEDIA_ROOT, file), 'rb'))
@@ -202,8 +193,9 @@ def media(request, file):
 
 
 @login_required
+@require_POST
 def fire(request, id):
-    if request.user.job.is_staff or request.user.is_superuser:
+    if request.user.job.staff or request.user.is_superuser:
         get_object_or_404(User, pk=id).delete()
         return redirect('admin')
     else:

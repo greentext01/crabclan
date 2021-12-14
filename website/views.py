@@ -98,7 +98,7 @@ def login_view(request):
         else:
             return render(request, "login.html", {
                 "message": "Invalid username and/or password."
-            })
+            }, status=400)
     else:
         return render(request, "login.html")
 
@@ -117,7 +117,10 @@ def register(request):
             user = form.save()
             login(request, user)
             return redirect('index')
-
+        else:
+            return render(request, "register.html", {
+                'form': form,
+            }, status=400)
     else:
         return render(request, "register.html", {
             'form': SignupForm(),
@@ -191,7 +194,7 @@ def media(request, file):
 @login_required
 @require_POST
 def fire(request, id):
-    if request.user.job.staff or request.user.is_superuser:
+    if request.user.job.staff or request.user.is_superuser or request.user.job.type == Job.EMPEROR:
         member = get_object_or_404(User, pk=id)
         if request.user.job.rank > member.job.rank and request.user.job.type == member.job.type:
             member.delete()

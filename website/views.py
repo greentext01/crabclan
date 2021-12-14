@@ -73,7 +73,7 @@ def admin(request):
 def approve(request, id):
     if request.user.job.staff or request.user.is_superuser:
         member = get_object_or_404(User, pk=id)
-        if request.user.job.rank > member.job.rank and request.user.job.type == member.job.type:
+        if request.user.job.rank > member.job.rank and request.user.job.type == member.job.type or request.user.job.type == Job.EMPEROR:
             member.approved = True
             member.save()
         else:

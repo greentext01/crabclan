@@ -1,5 +1,6 @@
 import os
 import pathlib
+import dj_database_url
 import re
 import qrcode
 import uuid
@@ -13,7 +14,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.http.response import FileResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.views.decorators.http import require_POST
 from PIL import Image, ImageDraw, ImageFont
 from fpdf import FPDF
 
@@ -71,9 +72,12 @@ def admin(request):
 @require_POST
 def approve(request, id):
     if request.user.job.staff or request.user.is_superuser:
-        user = get_object_or_404(User, pk=id)
-        user.approved = True
-        user.save()
+        member = get_object_or_404(User, pk=id)
+        if request.user.job.rank > member.job.rank and request.user.job.type == member.job.type:
+            member.approved = True
+            member.save()
+        else:
+            raise PermissionDenied()
         return redirect('admin')
     else:
         return redirect('index')
@@ -188,7 +192,11 @@ def media(request, file):
 @require_POST
 def fire(request, id):
     if request.user.job.staff or request.user.is_superuser:
-        get_object_or_404(User, pk=id).delete()
+        member = get_object_or_404(User, pk=id)
+        if request.user.job.rank > member.job.rank and request.user.job.type == member.job.type:
+            member.delete()
+        else:
+            raise PermissionDenied()
         return redirect('admin')
     else:
         raise PermissionDenied()

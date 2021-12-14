@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import pathlib
-import django_heroku
 import os
+import dj_database_url
 
 LOGGING = {
     'version': 1,
@@ -22,7 +22,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/path/to/django/debug.log',
+            'filename': 'debug.log',
         },
     },
     'loggers': {
@@ -44,9 +44,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = (os.environ.get('DEBUG') == 'True')
+DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS = [os.environ.get('HOST')]
+ALLOWED_HOSTS = [os.environ.get('HOST')] + ['.localhost', '127.0.0.1', '[::1]'] if DEBUG else []
 
 # Application definition
 
@@ -103,10 +103,7 @@ WSGI_APPLICATION = 'shrimpire.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.config(conn_max_age=600, ssl_require=not DEBUG)
 }
 
 AUTH_USER_MODEL = 'website.User'
@@ -134,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -149,5 +146,3 @@ MEDIA_URL = "/media/"
 
 ASSET_ROOT = (pathlib.Path(__file__).parent.parent /
               'website' / 'assets').resolve()
-
-django_heroku.settings(locals())

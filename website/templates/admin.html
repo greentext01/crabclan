@@ -19,17 +19,19 @@
                 <td>{{ member.first_name }} {{ member.last_name }}</td>
                 <td>{{ member.job }}</td>
                 <td>
-                    {% if user.job.rank > member.job.rank and user.job.type == member.job.type or user.job.type == Job.EMPEROR %}
+                    {% if user.job.rank > member.job.rank and user.job.type == member.job.type or user.job.type == 4 %}
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                             data-bs-target="#fireModal{{ member.username }}">Fire</button>
                     {% endif %}
                 </td>
                 <td>
-                    {% if not member.approved and user.job.rank > member.job.rank and user.job.type == member.job.type or user.job.type == Job.EMPEROR %}
-                        <form action="{% url 'approve' member.pk %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary">Approve</button>
-                        </form>
+                    {% if user.job.rank > member.job.rank and user.job.type == member.job.type or user.job.type == 4 %}
+                        {% if not member.approved %}
+                            <form action="{% url 'approve' member.pk %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Approve</button>
+                            </form>
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>

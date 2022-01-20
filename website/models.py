@@ -10,19 +10,20 @@ class Job(models.Model):
     unique = models.BooleanField(default=False)
     staff = models.BooleanField(default=False)
 
-    ATTACKER = 1
-    DEFENDER = 2
+    PEASENT = 0
+    SOLDIER = 1
+    MINER = 2
     BUILDER = 3
-    EMPEROR = 4
+    PRESIDENT = 4
     JOB_TYPE_CHOICES = [
-        (ATTACKER, 'Attacker'),
-        (DEFENDER, 'Defender'),
+        (PEASENT, 'Peasent'),
+        (SOLDIER, 'Soldier'),
+        (MINER, 'Miner'),
         (BUILDER, 'Builder'),
-        (EMPEROR, 'Emperor')
+        (PRESIDENT, 'President'),
     ]
 
-    type = models.IntegerField(choices=JOB_TYPE_CHOICES, default=ATTACKER)
-    rank = models.IntegerField(default=1)
+    type = models.IntegerField(choices=JOB_TYPE_CHOICES, default=SOLDIER)
 
     def __str__(self) -> str:
         return self.name

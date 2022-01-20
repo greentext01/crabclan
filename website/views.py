@@ -140,7 +140,7 @@ def idcard(request):
 
     image = Image.open(settings.ASSET_ROOT / 'background.png').convert('RGBA')
     rank = Image.open(settings.ASSET_ROOT /
-                      f'{request.user.job.rank}{request.user.job.type}.png').convert('RGBA')
+                      f'{request.user.job.type}.png').convert('RGBA')
 
     image.paste(rank, (522, 101), rank)
 
@@ -196,7 +196,7 @@ def media(request, file):
 def fire(request, id):
     if request.user.job.staff or request.user.is_superuser:
         member = get_object_or_404(User, pk=id)
-        if request.user.job.rank > member.job.rank and request.user.job.type == member.job.type or request.user.job.type == Job.EMPEROR:
+        if request.user.job.type == Job.PRESIDENT:
             member.delete()
         else:
             raise PermissionDenied()

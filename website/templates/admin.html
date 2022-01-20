@@ -2,62 +2,64 @@
 
 {% block body %}
 <h1>Admin panel</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Username</th>
-            <th scope="col">Full Name</th>
-            <th scope="col">Job</th>
-            <th scope="col">Fire</th>
-            <th scope="col">Approve</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for member in users %}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
             <tr>
-                <td>{{ member.username }}</td>
-                <td>{{ member.first_name }} {{ member.last_name }}</td>
-                <td>{{ member.job }}</td>
-                <td>
-                    {% if user.job.rank > member.job.rank and user.job.type == member.job.type or user.job.type == 4 %}
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                            data-bs-target="#fireModal{{ member.username }}">Fire</button>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if user.job.rank > member.job.rank and user.job.type == member.job.type or user.job.type == 4 %}
-                        {% if not member.approved %}
-                            <form action="{% url 'approve' member.pk %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">Approve</button>
-                            </form>
-                        {% endif %}
-                    {% endif %}
-                </td>
+                <th scope="col">Username</th>
+                <th scope="col">Full Name</th>
+                <th scope="col">Job</th>
+                <th scope="col">Fire</th>
+                <th scope="col">Approve</th>
             </tr>
-
-            <!-- Modal -->
-            <div class="modal fade" id="fireModal{{ member.username }}" tabindex="-1"
-                aria-labelledby="fireModalLabel{{ member.username }}" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="fireModalLabel{{ member.username }}">Fire {{ member.username }}</h5>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to fire {{ member.first_name }} {{ member.last_name }} ({{ member.username }})?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <form action="{% url 'fire' member.pk %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">Fire</button>
-                            </form>
+        </thead>
+        <tbody>
+            {% for member in users %}
+                <tr>
+                    <td>{{ member.username }}</td>
+                    <td>{{ member.first_name }} {{ member.last_name }}</td>
+                    <td>{{ member.job }}</td>
+                    <td>
+                        {% if user.job.type == 4 %}
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#fireModal{{ member.username }}">Fire</button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.job.type == 4 %}
+                            {% if not member.approved %}
+                                <form action="{% url 'approve' member.pk %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary">Approve</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+    
+                <!-- Modal -->
+                <div class="modal fade" id="fireModal{{ member.username }}" tabindex="-1"
+                    aria-labelledby="fireModalLabel{{ member.username }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="fireModalLabel{{ member.username }}">Fire {{ member.username }}</h5>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to fire {{ member.first_name }} {{ member.last_name }} ({{ member.username }})?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <form action="{% url 'fire' member.pk %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Fire</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
-    </tbody>
-</table>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock body %}

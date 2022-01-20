@@ -21,6 +21,7 @@ class Job(models.Model):
         (SOLDIER, 'Soldier'),
         (MINER, 'Miner'),
         (BUILDER, 'Builder'),
+        (PRESIDENT, 'President'),
         (SPECIAL_OPS, 'Special ops'),
     ]
 

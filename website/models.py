@@ -15,12 +15,13 @@ class Job(models.Model):
     MINER = 2
     BUILDER = 3
     PRESIDENT = 4
+    SPECIAL_OPS = 5
     JOB_TYPE_CHOICES = [
         (PEASENT, 'Peasent'),
         (SOLDIER, 'Soldier'),
         (MINER, 'Miner'),
         (BUILDER, 'Builder'),
-        (PRESIDENT, 'President'),
+        (SPECIAL_OPS, 'Special ops'),
     ]
 
     type = models.IntegerField(choices=JOB_TYPE_CHOICES, default=SOLDIER)

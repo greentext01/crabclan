@@ -20,13 +20,13 @@
                     <td>{{ member.first_name }} {{ member.last_name }}</td>
                     <td>{{ member.job }}</td>
                     <td>
-                        {% if user.job.type == 4 %}
+                        {% if user.job.staff %}
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                 data-bs-target="#fireModal{{ member.username }}">Fire</button>
                         {% endif %}
                     </td>
                     <td>
-                        {% if user.job.type == 4 %}
+                        {% if user.job.staff %}
                             {% if not member.approved %}
                                 <form action="{% url 'approve' member.pk %}" method="POST">
                                     {% csrf_token %}

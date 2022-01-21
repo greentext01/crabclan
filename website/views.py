@@ -196,7 +196,7 @@ def media(request, file):
 def fire(request, id):
     if request.user.job.staff or request.user.is_superuser:
         member = get_object_or_404(User, pk=id)
-        if request.user.job.type == Job.PRESIDENT:
+        if request.user.job.staff:
             member.delete()
         else:
             raise PermissionDenied()
